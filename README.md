@@ -1,6 +1,6 @@
 # SaaS Form App
 
-Simple Next.js form that stores submissions in Vercel Postgres.
+Simple Next.js form that stores submissions in Postgres via Prisma ORM.
 
 ## Local Run
 
@@ -18,7 +18,13 @@ cp .env.example .env.local
 
 3. Add your real `POSTGRES_URL` to `.env.local`.
 
-4. Start dev server:
+4. Push the Prisma schema to your database:
+
+```bash
+npx prisma db push
+```
+
+5. Start dev server:
 
 ```bash
 npm run dev
@@ -26,7 +32,7 @@ npm run dev
 
 ## What It Stores
 
-Submissions are inserted into `form_submissions` with columns:
+Submissions are inserted by Prisma into `form_submissions` with columns:
 
 - `id`
 - `full_name`
@@ -35,7 +41,7 @@ Submissions are inserted into `form_submissions` with columns:
 - `message`
 - `created_at`
 
-The table is auto-created on first successful submit.
+The table is created when you run `npx prisma db push`.
 
 ## Deploy To Vercel
 
