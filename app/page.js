@@ -1,66 +1,65 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+import { submitForm } from "./actions";
+
+const initialState = {
+  status: "idle",
+  message: "",
+};
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <button type="submit" disabled={pending}>
+      {pending ? "Saving..." : "Submit"}
+    </button>
+  );
+}
+
+export default function HomePage() {
+  const [state, formAction] = useActionState(submitForm, initialState);
+
+  return (
+    <main className="page">
+      <section className="card">
+        <h1>Customer Intake Form</h1>
+        <p>Form entries are saved directly to your Vercel Postgres database.</p>
+
+        <form action={formAction} className="form">
+          <label>
+            Full Name
+            <input name="fullName" type="text" required placeholder="Jane Doe" />
+          </label>
+
+          <label>
+            Email
+            <input name="email" type="email" required placeholder="jane@company.com" />
+          </label>
+
+          <label>
+            Company
+            <input name="company" type="text" placeholder="Acme Inc." />
+          </label>
+
+          <label>
+            Message
+            <textarea
+              name="message"
+              rows="4"
+              placeholder="Tell us what you are looking for"
             />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          </label>
+
+          <SubmitButton />
+        </form>
+
+        {state.status !== "idle" && (
+          <p className={state.status === "success" ? "ok" : "error"}>{state.message}</p>
+        )}
+      </section>
+    </main>
   );
 }
